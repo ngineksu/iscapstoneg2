@@ -1,7 +1,34 @@
 from google.cloud import pubsub_v1
+
 from tkinter import *
 from tkinter.ttk import *
 
+from socket import AF_INET, SOCK_DGRAM
+import sys
+import socket
+import struct, time
+
+#this function pulls the current time from NTP server
+
+def pullTime(host = "pool.ntp.org"):
+        port = 123
+        buf = 1024
+        address = (host,port)
+        msg = '\x1b' + 47 * '\0'
+ 
+        # reference time (in seconds since 1900-01-01 00:00:00)
+        TIME1970 = 2208988800 # 1970-01-01 00:00:00
+ 
+        # connect to server
+        client = socket.socket( AF_INET, SOCK_DGRAM)
+        client.sendto(msg.encode('utf-8'), address)
+        msg, address = client.recvfrom( buf )
+ 
+        t = struct.unpack( "!12I", msg )[10]
+        t -= TIME1970
+        return time.ctime(t).replace("  "," ")
+
+# this function sends messages to the topic
 
 def sendMessages():
     # TODO(developer)
@@ -11,13 +38,15 @@ def sendMessages():
     publisher = pubsub_v1.PublisherClient()
     topic_path = publisher.topic_path(project_id, topic_id)
 
+    
+
     for n in range(1, 10):
         data_str = f"Message number {n}"
         # Data must be a bytestring
         data = data_str.encode("utf-8")
         # Add two attributes, origin and username, to the message
         future = publisher.publish(
-            topic_path, data, origin="python-sample", username="gcp"
+            topic_path, data, Name="python-sample", ItemId="gcp", Quantity="test", TransactionDateTime=pullTime(), TransactionNumber="random number"
         )
         print(future.result())
 
