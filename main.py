@@ -23,7 +23,7 @@ def sendMessages():
 
     print(f"Published messages with custom attributes to {topic_path}.")
 
-# below this line is copypasted from tutorial
+# below is UI design
 
 
 # creates a Tk() object
@@ -59,12 +59,17 @@ label = Label(master,
  
 label.pack(pady = 10)
  
-# a button widget which will open a 
-# new window on button click
+# a button widget which will send messages on click
+
 btn = Button(master, 
              text ="Send messages", 
              command = sendMessages)
 btn.pack(pady = 10)
- 
+ # a button widget which will open a new window on button click
+btn = Button(master, 
+             text ="Open new Window", 
+             command = openNewWindow)
+btn.pack(pady = 10) 
+
 # mainloop, runs infinitely
 mainloop()
