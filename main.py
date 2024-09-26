@@ -42,7 +42,7 @@ def sendMessages():
     ourNumber = 2
 
     for n in range(1, ourNumber):
-        data_str = f"Message number {n}"
+        data_str = f"Message from publisher"
         # Data must be a bytestring
         data = data_str.encode("utf-8")
         # Add two attributes, origin and username, to the message
@@ -51,7 +51,7 @@ def sendMessages():
         )
         print(future.result())
 
-    print(f"Published messages with custom attributes to {topic_path}.")
+    print(f"Published message with custom attributes to {topic_path}.")
 
 # below is UI design
 
@@ -92,7 +92,7 @@ label.pack(pady = 10)
 # a button widget which will send messages on click
 
 btn = Button(master, 
-             text ="Send messages", 
+             text ="Send message", 
              command = sendMessages)
 btn.pack(pady = 10)
  # a button widget which will open a new window on button click
