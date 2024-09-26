@@ -14,7 +14,6 @@ for n in range(1, 10):
     # Add two attributes, origin and username, to the message
     future = publisher.publish(
         topic_path, data, origin="python-sample", username="gcp"
-    )
     print(future.result())
 
 print(f"Published messages with custom attributes to {topic_path}.")
