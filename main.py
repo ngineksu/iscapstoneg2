@@ -1,8 +1,9 @@
+#imports google cloud stuff
 from google.cloud import pubsub_v1
-
+#imports window stuff
 from tkinter import *
 from tkinter.ttk import *
-
+#imports time stuff
 from socket import AF_INET, SOCK_DGRAM
 import sys
 import socket
@@ -38,9 +39,9 @@ def sendMessages():
     publisher = pubsub_v1.PublisherClient()
     topic_path = publisher.topic_path(project_id, topic_id)
 
-    
+    ourNumber = 2
 
-    for n in range(1, 10):
+    for n in range(1, ourNumber):
         data_str = f"Message number {n}"
         # Data must be a bytestring
         data = data_str.encode("utf-8")
