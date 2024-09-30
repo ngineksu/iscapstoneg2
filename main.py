@@ -1,6 +1,8 @@
 #imports google cloud stuff
 from google.cloud import pubsub_v1
-#imports window stuff
+from concurrent.futures import TimeoutError
+
+#imports window/ui stuff
 from tkinter import *
 from tkinter.ttk import *
 #imports time stuff
@@ -53,6 +55,39 @@ def sendMessages():
 
     print(f"Published message with custom attributes to {topic_path}.")
 
+def pullMessages():
+
+    # TODO(developer)
+    project_id = "acquired-talent-433100-q6"
+    subscription_id = "is_capstone_pull"
+    # Number of seconds the subscriber should listen for messages
+    timeout = 5.0
+
+    subscriber = pubsub_v1.SubscriberClient()
+    subscription_path = subscriber.subscription_path(project_id, subscription_id)
+
+    def callback(message: pubsub_v1.subscriber.message.Message) -> None:
+        print(f"Received {message.data!r}.")
+        if message.attributes:
+            print("Attributes:")
+            for key in message.attributes:
+                value = message.attributes.get(key)
+                print(f"{key}: {value}")
+        message.ack()
+
+    streaming_pull_future = subscriber.subscribe(subscription_path, callback=callback)
+    print(f"Listening for messages on {subscription_path}..\n")
+
+    # Wrap subscriber in a 'with' block to automatically call close() when done.
+    with subscriber:
+        try:
+            # When `timeout` is not set, result() will block indefinitely,
+            # unless an exception is encountered first.
+            streaming_pull_future.result(timeout=timeout)
+        except TimeoutError:
+            streaming_pull_future.cancel()  # Trigger the shutdown.
+            streaming_pull_future.result()  # Block until the shutdown is complete.
+
 # below is UI design
 
 
@@ -82,6 +117,7 @@ def openNewWindow():
      # A Label widget to show in toplevel
     Label(newWindow, 
           text ="Welcome to our project!").pack()
+    
  
  
 label = Label(master, 
@@ -97,9 +133,14 @@ btn = Button(master,
 btn.pack(pady = 10)
  # a button widget which will open a new window on button click
 btn = Button(master, 
-             text ="Open new Window", 
+             text ="Open New Window", 
              command = openNewWindow)
 btn.pack(pady = 10) 
+btn = Button(master, 
+             text ="Pull messages", 
+             command = pullMessages)
+btn.pack(pady = 10)
+
 
 # mainloop, runs infinitely
 mainloop()
