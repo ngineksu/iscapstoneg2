@@ -144,11 +144,9 @@ btn = Button(master,
 btn.pack(pady = 10)
 
 #random name generation
-first_name = { "James", "Michael","Robert","John","David","William","Richard","Joseph","Thomas","Christopher","Charles","Daniel","Matthew","Anthony","Mark","Donald","Steven","Andrew","Paul","Joshua","Kenneth","Kevin","Brian","Timothy","Ronald","George","Jason","Edward","Jeffrey","Ryan","Jacob","Nicholas","Gary","Eric","Jonathan","Stephen","Larry","Justin","Scott","Brandon","Benjamin","Samuel","Gregory","Alexander","Patrick","Frank","Raymond","Jack","Dennis","Jerry","Tyler","Aaron","Jose","Adam","Nathan","Henry","Zachary","Douglas","Peter","Kyle","Noah","Ethan","Jeremy","Christian","Walter","Keith","Austin","Roger","Terry","Sean","Gerald","Carl","Dylan","Harold","Jordan","Jesse","Bryan","Lawrence","Arthur","Gabriel","Bruce","Logan","Billy","Joe","Alan","Juan","Elijah","Willie","Albert",
-"Wayne","Randy","Mason","Vincent","Liam","Roy","Bobby","Caleb","Bradley","Russell","Lucas",}
-last_name = {
-    "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez", "Hernandez", "Lopez", "Gonzales", "Wilson", "Anderson", "Thomas", "Taylor", "Moore", "Jackson", "Martin", "Lee", "Perez", "Thompson", "White", "Harris", "Sanchez", "Clark", "Ramirez", "Lewis", "Robinson", "Walker", "Young", "Allen", "King", "Wright", "Scott", "Torres", "Nguyen", "Hill", "Flores", "Green", "Adams", "Nelson", "Baker", "Hall", "Rivera", "Campbell", "Mitchell", "Carter", "Roberts", "Gomez"
-}
+first_name = [ 'James', 'Michael','Robert','John','David','William','Richard','Joseph','Thomas','Christopher','Charles','Daniel','Matthew','Anthony','Mark','Donald','Steven','Andrew','Paul','Joshua','Kenneth','Kevin','Brian','Timothy','Ronald','George','Jason','Edward','Jeffrey','Ryan','Jacob','Nicholas','Gary','Eric','Jonathan','Stephen','Larry','Justin','Scott','Brandon','Benjamin','Samuel','Gregory','Alexander','Patrick','Frank','Raymond','Jack','Dennis','Jerry','Tyler','Aaron','Jose','Adam','Nathan','Henry','Zachary','Douglas','Peter','Kyle','Noah','Ethan','Jeremy','Christian','Walter','Keith','Austin','Roger','Terry','Sean','Gerald','Carl','Dylan','Harold','Jordan','Jesse','Bryan','Lawrence','Arthur','Gabriel','Bruce','Logan','Billy','Joe','Alan','Juan','Elijah','Willie','Albert','Wayne','Randy','Mason','Vincent','Liam','Roy','Bobby','Caleb','Bradley','Russell','Lucas', ]
+last_name = [ 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzales', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin', 'Lee', 'Perez', 'Thompson', 'White', 'Harris', 'Sanchez', 'Clark', 'Ramirez', 'Lewis', 'Robinson', 'Walker', 'Young', 'Allen', 'King', 'Wright', 'Scott', 'Torres', 'Nguyen', 'Hill', 'Flores', 'Green', 'Adams', 'Nelson', 'Baker', 'Hall', 'Rivera', 'Campbell']
+
 
 
 # mainloop, runs infinitely
