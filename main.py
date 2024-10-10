@@ -10,6 +10,8 @@ from socket import AF_INET, SOCK_DGRAM
 import sys
 import socket
 import struct, time
+#import randomizer function
+import random
 
 #this function pulls the current time from NTP server
 
@@ -49,7 +51,7 @@ def sendMessages():
         data = data_str.encode("utf-8")
         # Add two attributes, origin and username, to the message
         future = publisher.publish(
-            topic_path, data, Name="python-sample", ItemId="gcp", Quantity="test", TransactionDateTime=pullTime(), TransactionNumber="random number"
+            topic_path, data, FirstName="python-sample", ItemId="gcp", Quantity="test", TransactionDateTime=pullTime(), TransactionNumber="random number"
         )
         print(future.result())
 
@@ -140,6 +142,13 @@ btn = Button(master,
              text ="Pull messages", 
              command = pullMessages)
 btn.pack(pady = 10)
+
+#random name generation
+first_name = { "James", "Michael","Robert","John","David","William","Richard","Joseph","Thomas","Christopher","Charles","Daniel","Matthew","Anthony","Mark","Donald","Steven","Andrew","Paul","Joshua","Kenneth","Kevin","Brian","Timothy","Ronald","George","Jason","Edward","Jeffrey","Ryan","Jacob","Nicholas","Gary","Eric","Jonathan","Stephen","Larry","Justin","Scott","Brandon","Benjamin","Samuel","Gregory","Alexander","Patrick","Frank","Raymond","Jack","Dennis","Jerry","Tyler","Aaron","Jose","Adam","Nathan","Henry","Zachary","Douglas","Peter","Kyle","Noah","Ethan","Jeremy","Christian","Walter","Keith","Austin","Roger","Terry","Sean","Gerald","Carl","Dylan","Harold","Jordan","Jesse","Bryan","Lawrence","Arthur","Gabriel","Bruce","Logan","Billy","Joe","Alan","Juan","Elijah","Willie","Albert",
+"Wayne","Randy","Mason","Vincent","Liam","Roy","Bobby","Caleb","Bradley","Russell","Lucas",}
+last_name = {
+    "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez", "Hernandez", "Lopez", "Gonzales", "Wilson", "Anderson", "Thomas", "Taylor", "Moore", "Jackson", "Martin", "Lee", "Perez", "Thompson", "White", "Harris", "Sanchez", "Clark", "Ramirez", "Lewis", "Robinson", "Walker", "Young", "Allen", "King", "Wright", "Scott", "Torres", "Nguyen", "Hill", "Flores", "Green", "Adams", "Nelson", "Baker", "Hall", "Rivera", "Campbell", "Mitchell", "Carter", "Roberts", "Gomez"
+}
 
 
 # mainloop, runs infinitely
