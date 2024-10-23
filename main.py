@@ -100,7 +100,6 @@ master = Tk()
 # root window
 master.geometry("200x200")
  
- 
 # function to open a new window 
 # on a button click
 def openNewWindow():
