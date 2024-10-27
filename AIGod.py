@@ -119,14 +119,9 @@ def start_subscriber(conn):
         output = (
             f"Received message: ID={message.message_id} Data={data}\n"
             f"Attributes:\n" + "\n".join(f"{key}: {value}" for key, value in attributes.items()) + "\n"
-            f"[{datetime.datetime.now()}] Processing: {message.message_id}\n"
         )
         text_widget.insert(END, output)
         text_widget.see(END)
-        #processing time, otherwise messages would overlap each other when button is spammed
-        time.sleep(3) 
-        text_widget.insert(END, f"[{datetime.datetime.now()}] Processed: {message.message_id}\n\n")
-        text_widget.see(END) 
         message.ack()
 
     streaming_pull_future = subscriber.subscribe(subscription_path, callback=callback)
