@@ -9,7 +9,7 @@ import threading
 from tkinter import *
 from tkinter import ttk
 
-# Database setup
+#makes the database if it doesn't already exist
 def setup_database():
     conn = sqlite3.connect('messages.db', check_same_thread=False)
     cursor = conn.cursor()
@@ -24,13 +24,13 @@ def setup_database():
             quantity TEXT,
             transaction_date_time TEXT,
             transaction_number TEXT,
-            is_duplicate INTEGER DEFAULT 0  -- New column to indicate duplicates
+            is_duplicate INTEGER DEFAULT 0
         )
     ''')
     conn.commit()
     return conn
 
-# Function to pull the current time from NTP server
+#function to pull the current time from NTP server
 def pullTime(host="pool.ntp.org"):
     port = 123
     buf = 1024
@@ -45,7 +45,11 @@ def pullTime(host="pool.ntp.org"):
     t -= TIME1970
     return time.ctime(t).replace("  ", " ")
 
-# Function to send messages to the topic
+#names for the first/last name attributes
+first_name = ['James', 'Michael', 'Robert', 'John', 'David', 'William', 'Richard', 'Joseph', 'Thomas', 'Christopher', 'Charles', 'Daniel', 'Matthew', 'Anthony', 'Mark', 'Donald', 'Steven', 'Andrew', 'Paul', 'Joshua', 'Kenneth', 'Kevin', 'Brian', 'Timothy', 'Ronald', 'George', 'Jason', 'Edward', 'Jeffrey', 'Ryan', 'Jacob', 'Nicholas', 'Gary', 'Eric', 'Jonathan', 'Stephen', 'Larry', 'Justin', 'Scott', 'Brandon', 'Benjamin', 'Samuel', 'Gregory', 'Alexander', 'Patrick', 'Frank', 'Raymond', 'Jack', 'Dennis', 'Jerry', 'Tyler', 'Aaron', 'Jose', 'Adam', 'Nathan', 'Henry', 'Zachary', 'Douglas', 'Peter', 'Kyle', 'Noah', 'Ethan', 'Jeremy', 'Christian', 'Walter', 'Keith', 'Austin', 'Roger', 'Terry', 'Sean', 'Gerald', 'Carl', 'Dylan', 'Harold', 'Jordan', 'Jesse', 'Bryan', 'Lawrence', 'Arthur', 'Gabriel', 'Bruce', 'Logan', 'Billy', 'Joe', 'Alan', 'Juan', 'Elijah', 'Willie', 'Albert', 'Wayne', 'Randy', 'Mason', 'Vincent', 'Liam', 'Roy', 'Bobby', 'Caleb', 'Bradley', 'Russell', 'Lucas']
+last_name = ['Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzales', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin', 'Lee', 'Perez', 'Thompson', 'White', 'Harris', 'Sanchez', 'Clark', 'Ramirez', 'Lewis', 'Robinson', 'Walker', 'Young', 'Allen', 'King', 'Wright', 'Scott', 'Torres', 'Nguyen', 'Hill', 'Flores', 'Green', 'Adams', 'Nelson', 'Baker', 'Hall', 'Rivera', 'Campbell']
+
+#function to send a message to the topic
 def sendMessages():
     project_id = "acquired-talent-433100-q6"
     topic_id = "capstone"
@@ -56,7 +60,7 @@ def sendMessages():
     ourNumber = 2
 
     for n in range(1, ourNumber):
-        data_str = "Group 2 Example Message :)"
+        data_str = input_message
         data = data_str.encode("utf-8")
         attributes = {
             "FirstName": str(random.choice(first_name)),
@@ -70,12 +74,12 @@ def sendMessages():
         future = publisher.publish(topic_path, data, **attributes)
         future.result()
 
-        # Format the attributes for display
+        #makes attributes appear in initial window
         attr_output = "\n".join(f"{key}: {value}" for key, value in attributes.items())
         text_widget.insert(END, f"Published message with attributes:\n{attr_output}\n\n")
-        text_widget.see(END)  # Scroll to the end
+        text_widget.see(END)
 
-# Continuous pull messages in a separate thread
+#continuously pulls messages from the subscriber
 def start_subscriber(conn):
     project_id = "acquired-talent-433100-q6"
     subscription_id = "is_capstone_pull"
@@ -111,51 +115,50 @@ def start_subscriber(conn):
         ))
         conn.commit()
 
-        # Prepare output for display
+        #make each message appear with attributes on their own lines in the view window
         output = (
             f"Received message: ID={message.message_id} Data={data}\n"
             f"Attributes:\n" + "\n".join(f"{key}: {value}" for key, value in attributes.items()) + "\n"
             f"[{datetime.datetime.now()}] Processing: {message.message_id}\n"
         )
         text_widget.insert(END, output)
-        text_widget.see(END)  # Scroll to the end
-
-        time.sleep(3)  # Simulate processing time
+        text_widget.see(END)
+        #processing time, otherwise messages would overlap each other when button is spammed
+        time.sleep(3) 
         text_widget.insert(END, f"[{datetime.datetime.now()}] Processed: {message.message_id}\n\n")
-        text_widget.see(END)  # Scroll to the end
+        text_widget.see(END) 
         message.ack()
 
     streaming_pull_future = subscriber.subscribe(subscription_path, callback=callback)
     text_widget.insert(END, f"Pulling messages from {subscription_path}...\n")
-    text_widget.see(END)  # Scroll to the end
+    text_widget.see(END) 
 
     with subscriber:
         try:
             streaming_pull_future.result()
         except Exception as e:
             text_widget.insert(END, f"Error: {e}\n")
-            text_widget.see(END)  # Scroll to the end
+            text_widget.see(END)
 
-# Function to create a new window to display the database contents
+#function to create the database window
 def open_database_window(conn):
     db_window = Toplevel(master)
     db_window.title("Database Records")
     db_window.geometry("1920x1080")
 
-    # Create Treeview
-    tree = ttk.Treeview(db_window, columns=("ID", "Message ID", "Data", "First Name", "Last Name", "Item ID", "Quantity", "Transaction Date Time", "Transaction Number", "Is Duplicate"), show='headings')
+    #creating the table with a column for each attribute
+    tree = ttk.Treeview(db_window, columns=("ID", "Message ID", "Data", "First Name", "Last Name", "Item ID", "Quantity", "Transaction Date Time", "Transaction Number", "Duplicate"), show='headings')
     for col in tree["columns"]:
         tree.heading(col, text=col)
     tree.pack(expand=True, fill='both')
 
-    # Variables to track the current sorting column, search term, and sort direction
-    current_sort_column = "id"  # Default sort by ID
+    #variables to keep track of what the user is searching/sorting
+    current_sort_column = "id"
     search_term = ""
-    sort_order = True  # True for ascending, False for descending
+    sort_order = True
 
-    # Function to refresh the table
+    #function to refresh the table and check for duplicates each refresh
     def refresh_table():
-        # Clear the current contents
         for row in tree.get_children():
             tree.delete(row)
 
@@ -170,77 +173,89 @@ def open_database_window(conn):
                 cursor.execute(f"SELECT * FROM messages ORDER BY {current_sort_column}")
 
         for row in cursor.fetchall():
-            is_duplicate_str = "Yes" if row[-1] == 1 else "No"  # Check the is_duplicate field
-            tree.insert("", "end", values=row[:-1] + (is_duplicate_str,))  # Exclude the integer from display
+            is_duplicate_str = "Yes" if row[-1] == 1 else "No"
+            tree.insert("", "end", values=row[:-1] + (is_duplicate_str,))
 
-        # Schedule the next refresh
-        db_window.after(2000, refresh_table)  # Refresh every 2 seconds
+        #keeps refreshing the table every 2 seconds
+        db_window.after(2000, refresh_table)
 
-    # Function to sort the records by ID
+    #function that sorts records by ID
     def sort_by_id():
         nonlocal current_sort_column, search_term
         current_sort_column = "id"
-        search_term = ""  # Clear search term
-        refresh_table()  # Refresh immediately to apply sort
+        search_term = "" 
+        refresh_table()
 
-    # Function to toggle sorting by Quantity
+    #function that sorts records by Quantity
     def sort_by_quantity():
         nonlocal current_sort_column, search_term, sort_order
         current_sort_column = "quantity"
-        search_term = ""  # Clear search term
-        sort_order = not sort_order  # Toggle the sort order
-        refresh_table()  # Refresh immediately to apply sort
+        search_term = ""
+        sort_order = not sort_order 
+        refresh_table()
 
-    # Function to filter by last name
+    #function to filter records by last name
     def search_by_last_name():
         nonlocal search_term
         search_term = search_var.get().strip().lower()
-        refresh_table()  # Refresh to apply the search filter
+        refresh_table() 
 
-    # Button to sort by ID
+    #buttons to sort by id, quantity, and the search box and button for last name
     sort_id_button = Button(db_window, text="Sort by ID", command=sort_by_id)
     sort_id_button.pack(side=LEFT, padx=5, pady=5)
 
-    # Button to sort by Quantity
     sort_quantity_button = Button(db_window, text="Sort by Quantity", command=sort_by_quantity)
     sort_quantity_button.pack(side=LEFT, padx=5, pady=5)
 
-    # Search entry for last name
     search_var = StringVar()
     search_entry = Entry(db_window, textvariable=search_var, width=20)
     search_entry.pack(side=LEFT, padx=5, pady=5)
     search_entry.insert(0, "Search by Last Name")
 
-    # Search button
     search_button = Button(db_window, text="Search", command=search_by_last_name)
     search_button.pack(side=LEFT, padx=5, pady=5)
 
-    refresh_table()  # Initial call to populate the table
+    refresh_table()
 
-# UI setup
+#function to adjust the input message for the send function
+def update_input_message():
+    global input_message
+    input_message = input_entry.get()
+    text_widget.insert(END, f"Input message updated to: {input_message}\n")
+    text_widget.see(END)
+    input_entry.delete(0, END)
+
+#opening the send and view window
 master = Tk()
+master.title("Send and View Messages")
 master.geometry("400x400")
 
-# Text widget to display messages
+input_message = "User has not input a message to send."
+
 text_widget = Text(master, wrap=WORD, height=15)
 text_widget.pack(pady=10)
 
-# Open database window on startup
+#open the database upon startup
 open_database_window(setup_database())
 
 label = Label(master, text="Welcome to our project!")
 label.pack(pady=10)
 
-# Buttons to interact with functions
+#entry widget for user input
+input_entry = Entry(master, width=40)
+input_entry.pack(pady=5)
+
+#button to change input message
+update_button = Button(master, text="Update Message", command=update_input_message)
+update_button.pack(pady=5)
+
+#send message
 send_button = Button(master, text="Send message", command=sendMessages)
 send_button.pack(pady=5)
 
-# Random name generation
-first_name = ['James', 'Michael', 'Robert', 'John', 'David', 'William', 'Richard', 'Joseph', 'Thomas', 'Christopher', 'Charles', 'Daniel', 'Matthew', 'Anthony', 'Mark', 'Donald', 'Steven', 'Andrew', 'Paul', 'Joshua', 'Kenneth', 'Kevin', 'Brian', 'Timothy', 'Ronald', 'George', 'Jason', 'Edward', 'Jeffrey', 'Ryan', 'Jacob', 'Nicholas', 'Gary', 'Eric', 'Jonathan', 'Stephen', 'Larry', 'Justin', 'Scott', 'Brandon', 'Benjamin', 'Samuel', 'Gregory', 'Alexander', 'Patrick', 'Frank', 'Raymond', 'Jack', 'Dennis', 'Jerry', 'Tyler', 'Aaron', 'Jose', 'Adam', 'Nathan', 'Henry', 'Zachary', 'Douglas', 'Peter', 'Kyle', 'Noah', 'Ethan', 'Jeremy', 'Christian', 'Walter', 'Keith', 'Austin', 'Roger', 'Terry', 'Sean', 'Gerald', 'Carl', 'Dylan', 'Harold', 'Jordan', 'Jesse', 'Bryan', 'Lawrence', 'Arthur', 'Gabriel', 'Bruce', 'Logan', 'Billy', 'Joe', 'Alan', 'Juan', 'Elijah', 'Willie', 'Albert', 'Wayne', 'Randy', 'Mason', 'Vincent', 'Liam', 'Roy', 'Bobby', 'Caleb', 'Bradley', 'Russell', 'Lucas']
-last_name = ['Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzales', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin', 'Lee', 'Perez', 'Thompson', 'White', 'Harris', 'Sanchez', 'Clark', 'Ramirez', 'Lewis', 'Robinson', 'Walker', 'Young', 'Allen', 'King', 'Wright', 'Scott', 'Torres', 'Nguyen', 'Hill', 'Flores', 'Green', 'Adams', 'Nelson', 'Baker', 'Hall', 'Rivera', 'Campbell']
-
-# Setup database and start the subscriber in a separate thread
+#start the continuous pull
 db_connection = setup_database()
 threading.Thread(target=start_subscriber, args=(db_connection,), daemon=True).start()
+
 
 mainloop()
