@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pub/Sub Web App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+        }
+        textarea {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .message {
+            margin-top: 20px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Google Cloud Pub/Sub Web App</h1>
+    <form id="messageForm">
+        <textarea id="messageInput" rows="4" placeholder='Enter your JSON message here (e.g., {"key": "value"})'></textarea>
+        <br>
+        <button type="submit">Send Message</button>
+    </form>
+    <div class="message" id="messageResult"></div>
+
+    <script>
+        document.getElementById('messageForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const messageInput = document.getElementById('messageInput').value;
+            let message;
+
+            // Try parsing the JSON to ensure it's valid
+            try {
+                message = JSON.parse(messageInput);
+            } catch (error) {
+                alert('Invalid JSON format. Please check your input.');
+                return;
+            }
+
+            const response = await fetch('/publish', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(message)
+            });
+
+            const result = await response.text();
+            document.getElementById('messageResult').textContent = result;
+            document.getElementById('messageInput').value = ''; // Clear input
+        });
+    </script>
+</body>
+</html>
