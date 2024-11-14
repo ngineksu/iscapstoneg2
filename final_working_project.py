@@ -174,14 +174,14 @@ def openDatabase(conn):
         db_window.after(2000, refreshTable)
 
     #function that sorts records by ID
-    def sort_by_id():
+    def sortById():
         nonlocal current_sort_column, search_term
         current_sort_column = "id"
         search_term = "" 
         refreshTable()
 
     #function that sorts records by Quantity
-    def sort_by_quantity():
+    def sortByQuantity():
         nonlocal current_sort_column, search_term, sort_order
         current_sort_column = "quantity"
         search_term = ""
@@ -195,10 +195,10 @@ def openDatabase(conn):
         refreshTable() 
 
     #buttons to sort by id, quantity, and the search box and button for last name
-    sort_id_button = Button(db_window, text="Sort by ID", command=sort_by_id)
+    sort_id_button = Button(db_window, text="Sort by ID", command=sortById)
     sort_id_button.pack(side=LEFT, padx=5, pady=5)
 
-    sort_quantity_button = Button(db_window, text="Sort by Quantity", command=sort_by_quantity)
+    sort_quantity_button = Button(db_window, text="Sort by Quantity", command=sortByQuantity)
     sort_quantity_button.pack(side=LEFT, padx=5, pady=5)
 
     search_var = StringVar()
