@@ -7,6 +7,18 @@ import random
 import threading
 from tkinter import *
 from tkinter import ttk
+import re
+import json
+import urllib.request
+
+
+with urllib.request.urlopen("https://geolocation-db.com/json") as url:
+    data = json.loads(url.read().decode())
+    country = data.get('country_name', '')
+    city = data.get('city', '')
+    state = data.get('state', '')
+    userlocation = (city, state, country)
+    
 
 #makes the database if it doesn't already exist
 def setupDatabase():
@@ -21,6 +33,7 @@ def setupDatabase():
             last_name TEXT,
             item_id TEXT,
             quantity TEXT,
+            location TEXT,
             transaction_date_time TEXT,
             transaction_number TEXT,
             is_duplicate INTEGER DEFAULT 0
@@ -66,6 +79,7 @@ def sendMessages():
             "LastName": str(random.choice(last_name)),
             "ItemId": str(random.randint(111111, 999999)),
             "Quantity": str(random.randint(1, 100)),
+            "Location": str(userlocation),
             "TransactionDateTime": pullTime(),
             "TransactionNumber": str(random.randint(11111111, 99999999))
         }
@@ -99,8 +113,8 @@ def startSubscriber(conn):
         is_duplicate = 1 if count > 0 else 0
 
         cursor.execute('''
-            INSERT INTO messages (message_id, data, first_name, last_name, item_id, quantity, transaction_date_time, transaction_number, is_duplicate)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO messages (message_id, data, first_name, last_name, item_id, quantity, location, transaction_date_time, transaction_number, is_duplicate)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', (
             message.message_id,
             data,
@@ -108,6 +122,7 @@ def startSubscriber(conn):
             attributes.get('LastName', ''),
             attributes.get('ItemId', ''),
             attributes.get('Quantity', ''),
+            attributes.get('Location', ''),
             attributes.get('TransactionDateTime', ''),
             attributes.get('TransactionNumber', ''),
             is_duplicate
@@ -141,7 +156,7 @@ def openDatabase(conn):
     db_window.geometry("1280x720")
 
     #creating the table with a column for each attribute
-    tree = ttk.Treeview(db_window, columns=("ID", "Message ID", "Data", "First Name", "Last Name", "Item ID", "Quantity", "Transaction Date Time", "Transaction Number", "Duplicate"), show='headings')
+    tree = ttk.Treeview(db_window, columns=("ID", "Message ID", "Data", "First Name", "Last Name", "Item ID", "Quantity", "Location", "Transaction Date Time", "Transaction Number", "Duplicate"), show='headings')
     for col in tree["columns"]:
         tree.heading(col, text=col)
     tree.pack(expand=True, fill='both')
