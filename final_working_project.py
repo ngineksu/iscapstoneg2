@@ -236,7 +236,7 @@ def updateMessage():
 #opening the send and view window
 master = Tk()
 master.title("Send and View Messages")
-master.geometry("700x700")
+master.geometry("700x550")
 master.configure(bg="lightblue")
 
 input_message = "User has not input a message to send."
