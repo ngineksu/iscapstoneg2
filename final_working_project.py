@@ -237,7 +237,8 @@ def updateMessage():
 #opening the send and view window
 master = Tk()
 master.title("Send and View Messages")
-master.geometry("400x400")
+master.geometry("700x700")
+master.configure(bg="lightblue")
 
 input_message = "User has not input a message to send."
 
@@ -247,7 +248,9 @@ text_widget.pack(pady=10)
 #open the database upon startup
 openDatabase(setupDatabase())
 
-label = Label(master, text="IS Capstone Group 2 Publisher/Subscriber")
+label = Label(master, text="IS Capstone Group 2 Publisher/Subscriber",
+font=("Helvetica", 14, "bold"),
+bg="lightblue")
 label.pack(pady=10)
 
 #entry widget for user input
@@ -255,11 +258,19 @@ input_entry = Entry(master, width=40)
 input_entry.pack(pady=5)
 
 #button to change input message
-update_button = Button(master, text="Update Message", command=updateMessage)
+update_button = Button(master, text="Update Message", command=updateMessage,
+bg="#28C6DB",
+fg="white",
+padx=20,
+pady=10)
 update_button.pack(pady=5)
 
+
 #send message
-send_button = Button(master, text="Send message", command=sendMessages)
+send_button = Button(master, text="Send message", command=sendMessages, bg="#28C6DB",
+fg="white",
+padx=20,
+pady=10)
 send_button.pack(pady=5)
 
 #start the continuous pull
