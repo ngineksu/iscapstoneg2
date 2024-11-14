@@ -11,15 +11,14 @@ import re
 import json
 import urllib.request
 
-
 with urllib.request.urlopen("https://geolocation-db.com/json") as url:
     data = json.loads(url.read().decode())
     country = data.get('country_name', '')
     city = data.get('city', '')
     state = data.get('state', '')
     userlocation = (city, state, country)
+    #change to allow github push
     
-
 #makes the database if it doesn't already exist
 def setupDatabase():
     conn = sqlite3.connect('messages.db', check_same_thread=False)
